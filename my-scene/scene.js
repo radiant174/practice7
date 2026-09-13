@@ -117,11 +117,43 @@ const belt = new THREE.Points(beltGeometry, beltMaterial);
 scene.add(belt);
 
 
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0, 0);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.minDistance = 8;
+controls.maxDistance = 140;
+controls.maxPolarAngle = Math.PI * 0.49;
+
+
+let elapsed = 0;
+
+const animate = () => {
+  requestAnimationFrame(animate);
+  elapsed += 0.016;
+
+  planets.forEach(item => {
+    item.pivot.rotation.y += item.orbitSpeed * 0.6;
+    item.mesh.rotation.y += item.spinSpeed;
+  });
+
+  belt.rotation.y += 0.0009;
+  stars.rotation.y += 0.0002;
+
+  const pulse = 1 + Math.sin(elapsed * 1.6) * 0.03;
+  sun.scale.set(pulse, pulse, pulse);
+  sunGlow.scale.set(pulse, pulse, pulse);
+  sunGlow.material.opacity = 0.16 + Math.sin(elapsed * 1.6) * 0.05;
+
+  controls.update();
+  renderer.render(scene, camera);
+};
+
+animate();
+
+
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.render(scene, camera);
 });
-
-renderer.render(scene, camera);
